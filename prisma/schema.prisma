@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Word {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  spanish       String
+  english       String[]
+  partOfSpeech  String
+  gender        String?
+  number        String?
+  conjugations  Json?
+  exampleSentences ExampleSentence[]
+  synonyms      String[]
+  antonyms      String[]
+  pronunciation String?
+  usageNotes    String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model ExampleSentence {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  spanish  String
+  english  String
+  wordId   String @db.ObjectId
+  word     Word   @relation(fields: [wordId], references: [id])
+}
+
