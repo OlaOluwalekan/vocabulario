@@ -3,6 +3,7 @@
 import React from 'react'
 
 import { getWords } from '@/utils/actions/words'
+import WordCard from './WordCard'
 
 const WordList = async () => {
   const words = await getWords()
@@ -15,10 +16,11 @@ const WordList = async () => {
     <div>
       {words.map((word) => {
         return (
-          <div key={word.id} className='border-t-2'>
-            <p>{word.spanish}</p>
-            <p>{word.english}</p>
-          </div>
+          <WordCard key={word.id} {...word} />
+          // <div key={word.id} className='border-t-2'>
+          //   <p>{word.spanish}</p>
+          //   <p>{word.english}</p>
+          // </div>
         )
       })}
     </div>
