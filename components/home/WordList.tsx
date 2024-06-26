@@ -4,27 +4,23 @@ import React from 'react'
 
 import { getWords } from '@/utils/actions/words'
 import WordCard from './WordCard'
+import WordListClient from './WordListClient'
 
-const WordList = async () => {
-  const words = await getWords()
+interface searchParams {
+  q: string
+  language: string
+}
+
+const WordList = async ({ q, language }: searchParams) => {
+  // console.log(q)
+
+  const words = await getWords(q, language)
 
   if (words.length === 0) {
     return <div>No words found</div>
   }
 
-  return (
-    <div>
-      {words.map((word) => {
-        return (
-          <WordCard
-            key={word.id}
-            spanish={word.spanish}
-            english={word.english}
-          />
-        )
-      })}
-    </div>
-  )
+  return <WordListClient words={words} />
 }
 
 export const WordListComponent = ({ words }: { words: any[] }) => {

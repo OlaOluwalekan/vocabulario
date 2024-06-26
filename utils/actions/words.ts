@@ -3,9 +3,21 @@
 import { revalidatePath } from 'next/cache'
 import { db } from '../db'
 
-export const getWords = async () => {
-  const params = ''
-  const words = await db.word.findMany()
+export const getWords = async (q: string, lang: string) => {
+  let language = lang
+
+  if (!lang) {
+    language = 'spanish'
+  }
+
+  const words = await db.word.findMany({
+    where: {
+      [language]: {
+        contains: q,
+        mode: 'insensitive',
+      },
+    },
+  })
 
   return words
 }
