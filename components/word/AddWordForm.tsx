@@ -1,32 +1,93 @@
 'use client'
 
-import { addWord } from '@/utils/actions/words'
+import { addWord, getSpanishWord } from '@/utils/actions/words'
 import InputWithLabel from '../ui/inputs/InputWithLabel'
 import PartsOfSpeechOptions from './PartsOfSpeechOptions'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/store'
-import { useRef, useTransition } from 'react'
-import { useRouter } from 'next/navigation'
+import { useEffect, useRef, useState, useTransition } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { setSelectedPOF } from '@/features/generalSlice'
+import GenderSelect from './GenderSelect'
+
+interface wordProps {
+  spanish: string
+  english: string
+  partOfSpeech: string
+  gender: string | null
+  number: string | null
+  conjugations: any
+}
 
 const AddWordForm = () => {
-  const { selectedPOF } = useSelector((store: RootState) => store.general)
+  const { selectedPOF, selectedGender } = useSelector(
+    (store: RootState) => store.general
+  )
   const [isPending, startTransition] = useTransition()
   const formRef = useRef<HTMLFormElement>(null)
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const edit = searchParams.get('edit') || undefined
+  const dispatch = useDispatch()
+  const [word, setWord] = useState<wordProps>({
+    spanish: '',
+    english: '',
+    partOfSpeech: '',
+    gender: '',
+    number: '',
+    conjugations: [],
+  })
+
+  // console.log(edit)
 
   const handleSubmit = (formData: FormData) => {
     startTransition(() => {
-      addWord(formData, selectedPOF).then((res) => {
+      addWord(formData, selectedPOF, selectedGender, edit).then((res) => {
         if (res.success) {
           if (formRef.current) {
             formRef.current.reset()
+            dispatch(setSelectedPOF([]))
           }
-          router.push('/')
+          // if (edit) {
+          //   router.push(`/words/${res.data?.spanish}`)
+          // } else {
+          //   router.push('/')
+          // }
         }
-        // console.log('success')
       })
     })
   }
+
+  useEffect(() => {
+    if (edit) {
+      getSpanishWord(edit).then((res) => {
+        // console.log(res)
+        if (res) {
+          const {
+            spanish,
+            english,
+            partOfSpeech,
+            gender,
+            number,
+            conjugations,
+          } = res
+          setWord({
+            spanish,
+            english,
+            partOfSpeech,
+            gender,
+            number,
+            conjugations,
+          })
+        }
+      })
+    }
+  }, [])
+
+  // useEffect(() => {
+  //   dispatch(setSelectedPOF(word.partOfSpeech.split(',')))
+  //   // console.log(word.english.join(','))
+  // }, [word])
 
   return (
     <form
@@ -39,36 +100,21 @@ const AddWordForm = () => {
         placeholder='Enter the Spanish word'
         label='Spanish word'
         name='spanish'
+        // value={edit && word.spanish}
+        // handleChange={(e: any) => setWord({ ...word, spanish: e.target.value })}
       />
       <InputWithLabel
         type='text'
         placeholder='Enter the English translation'
         label='English word'
         name='english'
+        // value={edit && word.english}
+        // handleChange={(e: any) => setWord({ ...word, english: e.target.value })}
       />
       <div>Part of Speech</div>
       <PartsOfSpeechOptions />
       <div>Gender</div>
-      <div>
-        <input
-          type='radio'
-          name='gender'
-          id='masculine'
-          value='masculine'
-          className='mr-1'
-        />
-        <label htmlFor='masculine' className='mr-2'>
-          Masculine
-        </label>
-        <input
-          type='radio'
-          name='gender'
-          id='feminine'
-          value='feminine'
-          className='mr-1'
-        />
-        <label htmlFor='feminine'>Feminine</label>
-      </div>
+      <GenderSelect />
       <InputWithLabel
         type='text'
         placeholder='Enter singular/plural of the spanish word'
@@ -86,7 +132,13 @@ const AddWordForm = () => {
         className='btn btn-wide btn-primary my-2'
         disabled={isPending}
       >
-        {isPending ? 'Adding...' : 'Add Word'}
+        {edit
+          ? isPending
+            ? 'Updating...'
+            : 'Update'
+          : isPending
+          ? 'Adding...'
+          : 'Add'}
       </button>
     </form>
   )

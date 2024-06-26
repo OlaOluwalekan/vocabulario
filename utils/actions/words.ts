@@ -7,16 +7,19 @@ export const getWords = async () => {
   const params = ''
   const words = await db.word.findMany()
 
-  // console.log(words)
-
   return words
 }
 
-export const addWord = async (formData: FormData, pof: string[]) => {
+export const addWord = async (
+  formData: FormData,
+  pof: string[],
+  gender: string,
+  edit?: string
+) => {
   const spanish = formData.get('spanish') as string
-  const english = (formData.get('english') as string).split(',')
+  const english = formData.get('english') as string
   const partOfSpeech = pof.join(',')
-  const gender = formData.get('gender') as string
+  // const gender = formData.get('gender') as string
   const number = formData.get('number') as string
   const conjugal = formData.get('conjugation') as string
 
@@ -33,29 +36,48 @@ export const addWord = async (formData: FormData, pof: string[]) => {
   }
 
   try {
-    await db.word.create({
+    // if (edit) {
+    //   const res = await db.word.update({
+    //     where: {
+    //       spanish: edit,
+    //     },
+    //     data: {
+    //       spanish,
+    //       english,
+    //       partOfSpeech,
+    //       gender,
+    //       number,
+    //       conjugations,
+    //     },
+    //   })
+    //   revalidatePath('/')
+    //   return { success: true, message: 'word updated successfully', data: res }
+    // }
+    const res = await db.word.create({
       data: {
         spanish,
         english,
         partOfSpeech,
-        gender,
         number,
         conjugations,
       },
     })
     revalidatePath('/')
-    return { success: true, message: 'word added successfully' }
+    return { success: true, message: 'word added successfully', data: res }
   } catch (error: any) {
-    return { success: false, message: error.message }
+    return { success: false, message: error.message, data: null }
   }
+  // console.log(spanish, english, partOfSpeech, gender, number, conjugations)
+  // console.log(pof, partOfSpeech)
 
-  // console.log(
-  //   'FORM DATA: ',
-  //   english,
-  //   spanish,
-  //   partOfSpeech,
-  //   gender,
-  //   number,
-  //   conjugations
-  // )
+  return { success: false, message: 'error.message', data: null }
+}
+
+export const getSpanishWord = async (spanish: string) => {
+  const word = await db.word.findFirst({
+    where: {
+      spanish,
+    },
+  })
+  return word
 }

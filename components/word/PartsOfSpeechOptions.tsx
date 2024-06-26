@@ -57,9 +57,10 @@ const PartsOfSpeechOptions = () => {
               type='checkbox'
               name='pof'
               id={part.value}
-              className='hidden'
+              // className='hidden'
               value={part.value}
               onChange={handleChange}
+              checked={selectedPOF.includes(part.value)}
             />
           </div>
         )

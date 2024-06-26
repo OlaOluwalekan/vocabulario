@@ -15,15 +15,15 @@ datasource db {
 
 model Word {
   id            String      @id @default(auto()) @map("_id") @db.ObjectId
-  spanish       String
-  english       String[]
+  spanish       String      @unique
+  english       String
   partOfSpeech  String
   gender        String?
   number        String?
   conjugations  Json?
   exampleSentences ExampleSentence[]
-  synonyms      String[]
-  antonyms      String[]
+  synonyms      String
+  antonyms      String
   pronunciation String?
   usageNotes    String?
   createdAt     DateTime    @default(now())
