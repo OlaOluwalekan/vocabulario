@@ -1,10 +1,12 @@
 import AddWordForm from '@/components/word/AddWordForm'
-import React from 'react'
+import React, { Suspense } from 'react'
 
 const AddWordPage = () => {
   return (
     <div>
-      <AddWordForm />
+      <Suspense>
+        <AddWordForm />
+      </Suspense>
     </div>
   )
 }
