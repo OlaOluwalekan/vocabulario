@@ -36,7 +36,7 @@ const WordDetailsCard = ({
           <span className='text-red-600'>{partOfSpeech}</span>
           <span className='text-blue-700'>{gender}</span>
         </section>
-        <p className='card-text'>{english.join(', ')}</p>
+        <p className='card-text'>{english}</p>
 
         {number && <p className='card-text'>{number}</p>}
 

@@ -22,8 +22,8 @@ model Word {
   number        String?
   conjugations  Json?
   exampleSentences ExampleSentence[]
-  synonyms      String
-  antonyms      String
+  synonyms      String?
+  antonyms      String?
   pronunciation String?
   usageNotes    String?
   createdAt     DateTime    @default(now())

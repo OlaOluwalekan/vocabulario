@@ -36,23 +36,23 @@ export const addWord = async (
   }
 
   try {
-    // if (edit) {
-    //   const res = await db.word.update({
-    //     where: {
-    //       spanish: edit,
-    //     },
-    //     data: {
-    //       spanish,
-    //       english,
-    //       partOfSpeech,
-    //       gender,
-    //       number,
-    //       conjugations,
-    //     },
-    //   })
-    //   revalidatePath('/')
-    //   return { success: true, message: 'word updated successfully', data: res }
-    // }
+    if (edit) {
+      const res = await db.word.update({
+        where: {
+          spanish: edit,
+        },
+        data: {
+          spanish,
+          english,
+          partOfSpeech,
+          gender,
+          number,
+          conjugations,
+        },
+      })
+      revalidatePath('/')
+      return { success: true, message: 'word updated successfully', data: res }
+    }
     const res = await db.word.create({
       data: {
         spanish,
@@ -60,6 +60,8 @@ export const addWord = async (
         partOfSpeech,
         number,
         conjugations,
+        synonyms: '',
+        antonyms: '',
       },
     })
     revalidatePath('/')

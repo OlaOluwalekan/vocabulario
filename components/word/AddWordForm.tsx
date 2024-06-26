@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/store'
 import { useEffect, useRef, useState, useTransition } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { setSelectedPOF } from '@/features/generalSlice'
+import { setSelectedGender, setSelectedPOF } from '@/features/generalSlice'
 import GenderSelect from './GenderSelect'
 
 interface wordProps {
@@ -47,12 +47,13 @@ const AddWordForm = () => {
           if (formRef.current) {
             formRef.current.reset()
             dispatch(setSelectedPOF([]))
+            dispatch(setSelectedGender('neuter'))
           }
-          // if (edit) {
-          //   router.push(`/words/${res.data?.spanish}`)
-          // } else {
-          //   router.push('/')
-          // }
+          if (edit) {
+            router.push(`/words/${res.data?.spanish}`)
+          } else {
+            router.push('/')
+          }
         }
       })
     })
@@ -84,10 +85,11 @@ const AddWordForm = () => {
     }
   }, [])
 
-  // useEffect(() => {
-  //   dispatch(setSelectedPOF(word.partOfSpeech.split(',')))
-  //   // console.log(word.english.join(','))
-  // }, [word])
+  useEffect(() => {
+    dispatch(setSelectedPOF(word.partOfSpeech.split(',')))
+    dispatch(setSelectedGender(word.gender))
+    // console.log(word.english.join(','))
+  }, [word])
 
   return (
     <form
@@ -100,16 +102,16 @@ const AddWordForm = () => {
         placeholder='Enter the Spanish word'
         label='Spanish word'
         name='spanish'
-        // value={edit && word.spanish}
-        // handleChange={(e: any) => setWord({ ...word, spanish: e.target.value })}
+        value={edit && word.spanish}
+        handleChange={(e: any) => setWord({ ...word, spanish: e.target.value })}
       />
       <InputWithLabel
         type='text'
         placeholder='Enter the English translation'
         label='English word'
         name='english'
-        // value={edit && word.english}
-        // handleChange={(e: any) => setWord({ ...word, english: e.target.value })}
+        value={edit && word.english}
+        handleChange={(e: any) => setWord({ ...word, english: e.target.value })}
       />
       <div>Part of Speech</div>
       <PartsOfSpeechOptions />
