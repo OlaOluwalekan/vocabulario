@@ -5,12 +5,11 @@ import Link from 'next/link'
 import { GiSpeaker } from 'react-icons/gi'
 
 interface WordCardProps {
-  id: string
   spanish: string
   english: string
 }
 
-const WordCard = ({ spanish, english, id }: WordCardProps) => {
+const WordCard = ({ spanish, english }: WordCardProps) => {
   return (
     <div className='card bg-base-100 w-full my-2 py-0 hover:shadow-xl hover:bg-base-200'>
       <div className='card-body py-2'>
