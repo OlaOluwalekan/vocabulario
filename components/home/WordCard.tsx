@@ -7,7 +7,7 @@ import { GiSpeaker } from 'react-icons/gi'
 interface WordCardProps {
   id: string
   spanish: string
-  english: string[]
+  english: string
 }
 
 const WordCard = ({ spanish, english, id }: WordCardProps) => {

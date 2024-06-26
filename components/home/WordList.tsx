@@ -15,13 +15,7 @@ const WordList = async () => {
   return (
     <div>
       {words.map((word) => {
-        return (
-          <WordCard key={word.id} {...word} />
-          // <div key={word.id} className='border-t-2'>
-          //   <p>{word.spanish}</p>
-          //   <p>{word.english}</p>
-          // </div>
-        )
+        return <WordCard key={word.id} {...word} />
       })}
     </div>
   )
