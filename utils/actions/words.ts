@@ -18,11 +18,17 @@ export const getWords = async (q: string, lang: string) => {
       },
     },
     orderBy: {
-      spanish: 'desc',
+      spanish: 'asc',
     },
   })
 
-  return words
+  const sortedWords = words.sort((a: any, b: any) => {
+    return a[language].localeCompare(b[language], 'es', { sensitivity: 'base' })
+  })
+
+  // console.log('WORDS::', sortedWords)
+
+  return sortedWords
 }
 
 export const addWord = async (
@@ -122,4 +128,13 @@ export const getSpanishWord = async (spanish: string) => {
     },
   })
   return word
+}
+
+export const deleteSpanishWord = async (spanish: string) => {
+  await db.word.delete({
+    where: {
+      spanish,
+    },
+  })
+  revalidatePath('/')
 }

@@ -16,7 +16,7 @@ interface wordProps {
   partOfSpeech: string
   gender: string | null
   number: string | null
-  conjugations: any
+  conjugations: string
 }
 
 const AddWordForm = () => {
@@ -35,7 +35,7 @@ const AddWordForm = () => {
     partOfSpeech: '',
     gender: '',
     number: '',
-    conjugations: [],
+    conjugations: '',
   })
 
   // console.log(edit)
@@ -62,28 +62,36 @@ const AddWordForm = () => {
   useEffect(() => {
     if (edit) {
       getSpanishWord(edit).then((res) => {
-        // console.log(res)
+        // console.log(res?.conjugations)
+        let formattedConjugation: string = ''
         if (res) {
-          const {
-            spanish,
-            english,
-            partOfSpeech,
-            gender,
-            number,
-            conjugations,
-          } = res
+          if (res.conjugations) {
+            const newConjugations = res.conjugations as Array<{}>
+            const newConj = newConjugations.map((conj) => {
+              const test = Object.entries(conj)[0]
+              return `${test[0]}:${test[1]}`
+            })
+            formattedConjugation = newConj.join(',')
+            // console.log('NEW: ', newConj.join(','))
+          }
+
+          const { spanish, english, partOfSpeech, gender, number } = res
           setWord({
             spanish,
             english,
             partOfSpeech,
             gender,
             number,
-            conjugations,
+            conjugations: formattedConjugation,
           })
         }
       })
     }
   }, [])
+
+  useEffect(() => {
+    console.log(word)
+  }, [word])
 
   useEffect(() => {
     dispatch(setSelectedPOF(word.partOfSpeech.split(',')))
@@ -128,6 +136,10 @@ const AddWordForm = () => {
         placeholder='Enter tenses for verbs'
         label='Conjugation (Optional)'
         name='conjugation'
+        value={edit && word.conjugations}
+        handleChange={(e: any) =>
+          setWord({ ...word, conjugations: e.target.value })
+        }
       />
       <button
         type='submit'

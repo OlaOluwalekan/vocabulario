@@ -1,8 +1,10 @@
 'use client'
 
 import { handleSpeak } from '@/utils/actions/speak'
+import { deleteSpanishWord } from '@/utils/actions/words'
 import Link from 'next/link'
-import { FaEdit } from 'react-icons/fa'
+import { useRouter } from 'next/navigation'
+import { FaEdit, FaTrash } from 'react-icons/fa'
 import { GiSpeaker } from 'react-icons/gi'
 
 interface WordProps {
@@ -11,6 +13,11 @@ interface WordProps {
   partOfSpeech: string
   gender: string
   number?: string
+  conjugations?: []
+}
+
+interface MyObject {
+  [key: string]: string
 }
 
 const WordDetailsCard = ({
@@ -19,7 +26,15 @@ const WordDetailsCard = ({
   partOfSpeech,
   gender,
   number,
+  conjugations,
 }: WordProps) => {
+  const router = useRouter()
+
+  const handleDelete = async () => {
+    await deleteSpanishWord(spanish)
+    router.push('/')
+  }
+
   return (
     <div className='card bg-base-100 w-[90%] max-w-[600px] mx-auto mt-10 shadow-xl'>
       <div className='card-body'>
@@ -40,10 +55,34 @@ const WordDetailsCard = ({
 
         {number && <p className='card-text'>{number}</p>}
 
-        <article className='flex justify-end'>
-          <Link href={`/words/add?edit=${spanish}`}>
+        {conjugations &&
+          conjugations.map((conjugation: MyObject) => {
+            const [property, value] = Object.entries(conjugation)[0]
+
+            return (
+              <article>
+                <span>{property}: </span>{' '}
+                <Link
+                  href={`/words/${value}`}
+                  className='underline text-primary'
+                >
+                  {value}
+                </Link>
+              </article>
+            )
+          })}
+
+        <article className='flex justify-end gap-5'>
+          <Link href={`/words/add?edit=${spanish}`} title='Edit word'>
             <FaEdit />
           </Link>
+          <button
+            className='text-red-600'
+            title='Delete word'
+            onClick={handleDelete}
+          >
+            <FaTrash />
+          </button>
         </article>
       </div>
     </div>
