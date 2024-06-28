@@ -53,21 +53,6 @@ export const addWord = async (
   }
 
   try {
-    const existingWord = await db.word.findUnique({
-      where: {
-        spanish,
-      },
-    })
-    if (existingWord) {
-      console.log('WORD ALREADY EXIST')
-
-      return {
-        success: false,
-        message: 'word already in vocabulary',
-        data: existingWord,
-      }
-    }
-
     if (edit) {
       const res = await db.word.update({
         where: {
@@ -84,6 +69,16 @@ export const addWord = async (
       })
       revalidatePath('/')
       return { success: true, message: 'word updated successfully', data: res }
+    }
+    const existingWord = await getSpanishWord(spanish)
+    if (existingWord) {
+      console.log('WORD ALREADY EXIST')
+
+      return {
+        success: false,
+        message: 'word already in vocabulary',
+        data: existingWord,
+      }
     }
     const res = await db.word.create({
       data: {
