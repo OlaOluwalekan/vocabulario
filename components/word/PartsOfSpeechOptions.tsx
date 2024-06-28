@@ -16,6 +16,7 @@ const partsOfSpeech = [
   { id: 7, name: 'int', value: 'interjection' },
   { id: 8, name: 'conj', value: 'conjunction' },
   { id: 9, name: 'art', value: 'article' },
+  { id: 10, name: 'phrase', value: 'phrase' },
 ]
 
 const PartsOfSpeechOptions = () => {
