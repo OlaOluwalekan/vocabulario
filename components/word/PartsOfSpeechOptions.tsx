@@ -23,8 +23,13 @@ const PartsOfSpeechOptions = () => {
   const dispatch = useDispatch()
 
   const handleChange = (e: any) => {
+    // const value = e.target.value
+    // if (value.trim() === '') return
+
     if (e.target.checked) {
-      dispatch(setSelectedPOF([...selectedPOF, e.target.value]))
+      if (e.target.value !== '') {
+        dispatch(setSelectedPOF([...selectedPOF, e.target.value]))
+      }
     } else {
       const newSelected = selectedPOF.filter((item) => item !== e.target.value)
       dispatch(setSelectedPOF(newSelected))

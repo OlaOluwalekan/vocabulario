@@ -17,6 +17,9 @@ export const getWords = async (q: string, lang: string) => {
         mode: 'insensitive',
       },
     },
+    orderBy: {
+      spanish: 'desc',
+    },
   })
 
   return words
@@ -30,8 +33,10 @@ export const addWord = async (
 ) => {
   const spanish = formData.get('spanish') as string
   const english = formData.get('english') as string
-  const partOfSpeech = pof.join(',')
-  // const gender = formData.get('gender') as string
+  let partOfSpeech: string | string[] = pof.filter((item) => {
+    return item !== ''
+  })
+  partOfSpeech = partOfSpeech.join(',')
   const number = formData.get('number') as string
   const conjugal = formData.get('conjugation') as string
 
@@ -48,6 +53,21 @@ export const addWord = async (
   }
 
   try {
+    const existingWord = await db.word.findUnique({
+      where: {
+        spanish,
+      },
+    })
+    if (existingWord) {
+      console.log('WORD ALREADY EXIST')
+
+      return {
+        success: false,
+        message: 'word already in vocabulary',
+        data: existingWord,
+      }
+    }
+
     if (edit) {
       const res = await db.word.update({
         where: {
@@ -70,6 +90,7 @@ export const addWord = async (
         spanish,
         english,
         partOfSpeech,
+        gender,
         number,
         conjugations,
         synonyms: '',
@@ -78,17 +99,29 @@ export const addWord = async (
     })
     revalidatePath('/')
     return { success: true, message: 'word added successfully', data: res }
+    console.log(
+      'SPANISH',
+      spanish,
+      'ENGLISH',
+      english,
+      'POF',
+      partOfSpeech,
+      'GENDER',
+      gender
+      // number,
+      // conjugations
+    )
   } catch (error: any) {
     return { success: false, message: error.message, data: null }
   }
-  // console.log(spanish, english, partOfSpeech, gender, number, conjugations)
+
   // console.log(pof, partOfSpeech)
 
   return { success: false, message: 'error.message', data: null }
 }
 
 export const getSpanishWord = async (spanish: string) => {
-  const word = await db.word.findFirst({
+  const word = await db.word.findUnique({
     where: {
       spanish,
     },
