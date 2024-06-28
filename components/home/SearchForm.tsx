@@ -1,13 +1,42 @@
 'use client'
 
+import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { FaSearch } from 'react-icons/fa'
+import { useEffect, useRef, useState } from 'react'
+import { FaSearch, FaTimes } from 'react-icons/fa'
+import { FaMicrophone } from 'react-icons/fa6'
+
+interface ISpeechRecognition extends EventTarget {
+  continuous: boolean
+  interimResults: boolean
+  lang: string
+  start(): void
+  stop(): void
+  onresult: (event: any) => void
+  onerror: (event: any) => void
+  onend: () => void
+}
 
 const SearchForm = () => {
   const [language, setLanguage] = useState('spanish')
   const [searchTerm, setSearchTerm] = useState('')
+  const [isListening, setIsListening] = useState<boolean>(false)
   const router = useRouter()
+  const recognitionRef = useRef<ISpeechRecognition | null>(null)
+
+  const handleMicClick = () => {
+    if (recognitionRef.current) {
+      if (isListening) {
+        recognitionRef.current.stop()
+        setIsListening(false)
+      } else {
+        recognitionRef.current.start()
+        setIsListening(true)
+      }
+    } else {
+      alert('Speech recognition not supported')
+    }
+  }
 
   const handleChange = (e: any) => {
     setSearchTerm(e.target.value)
@@ -23,6 +52,31 @@ const SearchForm = () => {
     }
   }, [searchTerm])
 
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window) {
+      const SpeechRecognition = (window as any).webkitSpeechRecognition
+      recognitionRef.current = new SpeechRecognition() as ISpeechRecognition
+      recognitionRef.current.continuous = false
+      recognitionRef.current.interimResults = false
+      recognitionRef.current.lang = language === 'english' ? 'en-US' : 'es-ES'
+
+      recognitionRef.current.onresult = (event: any) => {
+        // console.log('MIC TEXT: ', event.results[0][0].transcript)
+
+        setSearchTerm(event.results[0][0].transcript)
+      }
+
+      recognitionRef.current.onerror = (event: any) => {
+        console.log('speech recognition error: ', event.error)
+        setIsListening(false)
+      }
+
+      recognitionRef.current.onend = () => {
+        setIsListening(false)
+      }
+    }
+  }, [])
+
   return (
     <form className='w-full my-3'>
       <div className='join'>
@@ -35,6 +89,24 @@ const SearchForm = () => {
             value={searchTerm}
             onChange={handleChange}
           />
+          {searchTerm === '' && (
+            <button
+              onClick={handleMicClick}
+              type='button'
+              className={clsx(isListening ? 'text-red-600' : 'text-black')}
+            >
+              <FaMicrophone />
+            </button>
+          )}
+          {searchTerm !== '' && (
+            <button
+              type='button'
+              className='text-red-600'
+              onClick={() => setSearchTerm('')}
+            >
+              <FaTimes />
+            </button>
+          )}
         </label>
         <select
           className='select select-bordered join-item'
