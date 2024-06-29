@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import { GiSpeaker } from 'react-icons/gi'
+import MarkDown from 'react-markdown'
 
 interface WordProps {
   spanish: string
@@ -14,6 +15,7 @@ interface WordProps {
   gender: string
   number?: string
   conjugations?: []
+  usageNotes?: string
 }
 
 interface MyObject {
@@ -27,6 +29,7 @@ const WordDetailsCard = ({
   gender,
   number,
   conjugations,
+  usageNotes,
 }: WordProps) => {
   const router = useRouter()
 
@@ -59,7 +62,7 @@ const WordDetailsCard = ({
             const [property, value] = Object.entries(conjugation)[0]
 
             return (
-              <article>
+              <article key={property}>
                 <span>{property}: </span>{' '}
                 <Link
                   href={`/words/${value}`}
@@ -70,6 +73,37 @@ const WordDetailsCard = ({
               </article>
             )
           })}
+
+        <div>
+          <MarkDown
+            components={{
+              a({ children, ...props }) {
+                return (
+                  <Link
+                    href={props.href as string}
+                    {...props}
+                    className='text-primary underline'
+                  >
+                    {children}
+                  </Link>
+                )
+              },
+              code({ children, ...props }) {
+                return (
+                  <code
+                    {...props}
+                    className='bg-blue-200 px-1 rounded italic cursor-pointer'
+                    onMouseOver={() => handleSpeak(children as string)}
+                  >
+                    {children}
+                  </code>
+                )
+              },
+            }}
+          >
+            {usageNotes}
+          </MarkDown>
+        </div>
 
         <article className='flex justify-end gap-5'>
           <Link href={`/words/add?edit=${spanish}`} title='Edit word'>

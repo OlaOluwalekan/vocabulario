@@ -37,9 +37,9 @@ const PartsOfSpeechOptions = () => {
     }
   }
 
-  useEffect(() => {
-    console.log(selectedPOF)
-  }, [selectedPOF])
+  // useEffect(() => {
+  //   console.log(selectedPOF)
+  // }, [selectedPOF])
 
   return (
     <div className='flex gap-2 my-2 flex-wrap justify-center'>

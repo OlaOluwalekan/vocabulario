@@ -1,8 +1,12 @@
+import { franc } from 'franc'
+
 export const handleSpeak = (text: string) => {
   if ('speechSynthesis' in window) {
+    const detectedLang = franc(text, { minLength: 1 })
+    // console.log('det: ', detectedLang)
+
     const utterance = new SpeechSynthesisUtterance(text)
     utterance.lang = 'es-Es'
-    console.log('UT: ', utterance)
 
     window.speechSynthesis.speak(utterance)
   } else {

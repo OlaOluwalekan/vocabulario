@@ -35,7 +35,8 @@ export const addWord = async (
   formData: FormData,
   pof: string[],
   gender: string,
-  edit?: string
+  edit?: string,
+  usageNotes: string = ''
 ) => {
   const spanish = formData.get('spanish') as string
   const english = formData.get('english') as string
@@ -71,6 +72,7 @@ export const addWord = async (
           gender,
           number,
           conjugations,
+          usageNotes,
         },
       })
       revalidatePath('/')
@@ -93,6 +95,7 @@ export const addWord = async (
         partOfSpeech,
         gender,
         number,
+        usageNotes,
         conjugations,
         synonyms: '',
         antonyms: '',

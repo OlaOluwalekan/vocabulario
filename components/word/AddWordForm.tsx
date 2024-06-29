@@ -7,8 +7,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/store'
 import { useEffect, useRef, useState, useTransition } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { setSelectedGender, setSelectedPOF } from '@/features/generalSlice'
+import {
+  setNotes,
+  setSelectedGender,
+  setSelectedPOF,
+} from '@/features/generalSlice'
 import GenderSelect from './GenderSelect'
+import MarkdownEditor from './MarkdownEditor'
+import KeyBoard from './KeyBoard'
 
 interface wordProps {
   spanish: string
@@ -17,12 +23,15 @@ interface wordProps {
   gender: string | null
   number: string | null
   conjugations: string
+  // usageNotes?: string
 }
 
 const AddWordForm = () => {
-  const { selectedPOF, selectedGender } = useSelector(
-    (store: RootState) => store.general
-  )
+  const {
+    selectedPOF,
+    selectedGender,
+    note: usageNotes,
+  } = useSelector((store: RootState) => store.general)
   const [isPending, startTransition] = useTransition()
   const formRef = useRef<HTMLFormElement>(null)
   const router = useRouter()
@@ -36,26 +45,30 @@ const AddWordForm = () => {
     gender: '',
     number: '',
     conjugations: '',
+    // usageNotes: ""
   })
+  // const [usageNotes, setUsageNotes] = useState('')
 
   // console.log(edit)
 
   const handleSubmit = (formData: FormData) => {
     startTransition(() => {
-      addWord(formData, selectedPOF, selectedGender, edit).then((res) => {
-        if (res.success) {
-          if (formRef.current) {
-            formRef.current.reset()
-            dispatch(setSelectedPOF([]))
-            dispatch(setSelectedGender('neuter'))
-          }
-          if (edit) {
-            router.push(`/words/${res.data?.spanish}`)
-          } else {
-            router.push('/')
+      addWord(formData, selectedPOF, selectedGender, edit, usageNotes).then(
+        (res) => {
+          if (res.success) {
+            if (formRef.current) {
+              formRef.current.reset()
+              dispatch(setSelectedPOF([]))
+              dispatch(setSelectedGender('neuter'))
+            }
+            if (edit) {
+              router.push(`/words/${res.data?.spanish}`)
+            } else {
+              router.push('/')
+            }
           }
         }
-      })
+      )
     })
   }
 
@@ -75,7 +88,14 @@ const AddWordForm = () => {
             // console.log('NEW: ', newConj.join(','))
           }
 
-          const { spanish, english, partOfSpeech, gender, number } = res
+          const {
+            spanish,
+            english,
+            partOfSpeech,
+            gender,
+            number,
+            usageNotes: note,
+          } = res
           setWord({
             spanish,
             english,
@@ -84,14 +104,17 @@ const AddWordForm = () => {
             number,
             conjugations: formattedConjugation,
           })
+          if (note) {
+            dispatch(setNotes(note))
+          }
         }
       })
     }
   }, [])
 
   useEffect(() => {
-    console.log(word)
-  }, [word])
+    console.log(usageNotes)
+  }, [usageNotes])
 
   useEffect(() => {
     dispatch(setSelectedPOF(word.partOfSpeech.split(',')))
@@ -101,7 +124,7 @@ const AddWordForm = () => {
 
   return (
     <form
-      className='card shadow-xl w-96 mx-auto bg-base-200 mt-3 flex flex-col items-center justify-center px-3 py-5'
+      className='card shadow-xl w-96 mx-auto bg-base-200 mt-3 flex flex-col items-center justify-center px-3 py-5 relative'
       action={handleSubmit}
       ref={formRef}
     >
@@ -125,11 +148,14 @@ const AddWordForm = () => {
       <PartsOfSpeechOptions />
       <div>Gender</div>
       <GenderSelect />
+      <MarkdownEditor initialValue={usageNotes} />
       <InputWithLabel
         type='text'
         placeholder='Enter singular/plural of the spanish word'
         label='Number (Optional)'
         name='number'
+        value={edit && (word.number as string)}
+        handleChange={(e: any) => setWord({ ...word, number: e.target.value })}
       />
       <InputWithLabel
         type='text'
@@ -154,6 +180,7 @@ const AddWordForm = () => {
           ? 'Adding...'
           : 'Add'}
       </button>
+      <KeyBoard />
     </form>
   )
 }

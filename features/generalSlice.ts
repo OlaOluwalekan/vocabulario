@@ -3,11 +3,13 @@ import { createSlice } from '@reduxjs/toolkit'
 interface initialStateProps {
   selectedPOF: string[]
   selectedGender: string
+  note: string
 }
 
 const initialState: initialStateProps = {
   selectedPOF: [],
   selectedGender: 'neuter',
+  note: '',
 }
 
 const generalSlice = createSlice({
@@ -20,9 +22,13 @@ const generalSlice = createSlice({
     setSelectedGender: (state, action) => {
       state.selectedGender = action.payload
     },
+    setNotes: (state, action) => {
+      state.note = action.payload
+    },
   },
 })
 
-export const { setSelectedPOF, setSelectedGender } = generalSlice.actions
+export const { setSelectedPOF, setSelectedGender, setNotes } =
+  generalSlice.actions
 
 export default generalSlice.reducer
