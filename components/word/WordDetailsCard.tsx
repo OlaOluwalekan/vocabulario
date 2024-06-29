@@ -50,10 +50,9 @@ const WordDetailsCard = ({
         <section className='text-sm italic flex gap-3'>
           <span className='text-red-600'>{partOfSpeech}</span>
           <span className='text-blue-700'>{gender}</span>
+          {number && <span className='text-teal-600'>{number}</span>}
         </section>
         <p className='card-text'>{english}</p>
-
-        {number && <p className='card-text'>{number}</p>}
 
         {conjugations &&
           conjugations.map((conjugation: MyObject) => {
