@@ -38,3 +38,10 @@ model ExampleSentence {
   word     Word   @relation(fields: [wordId], references: [id])
 }
 
+model Chat {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  title         String   
+  context       String   
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
