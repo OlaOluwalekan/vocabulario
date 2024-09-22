@@ -16,6 +16,8 @@ const CreateChatForm = () => {
   const [formData, setFormData] = useState({
     title: "",
     context: "",
+    modelName: "",
+    description: "",
   });
   const [selectData, setSelectData] = useState(chatContextSelectData);
   const dispatch = useDispatch();
@@ -36,7 +38,9 @@ const CreateChatForm = () => {
     setCustomInputValue(e.target.value);
   };
 
-  const handleFormDataChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFormDataChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -65,6 +69,12 @@ const CreateChatForm = () => {
         if (res.success) {
           console.log(res.data);
           toast.success(res.message);
+          setFormData({
+            title: "",
+            context: "",
+            modelName: "",
+            description: "",
+          });
           dispatch(setChatPopupIsOpen(false));
           router.push(`/chat/${res.data?.id}`); // Redirect to the chat page
         } else {
@@ -97,6 +107,35 @@ const CreateChatForm = () => {
             value={formData.title}
             onChange={handleFormDataChange}
           />
+        </label>
+
+        {/* model name */}
+        <label className="form-control w-full">
+          <div className="label">
+            <span className="label-text">Bot Name (optional)</span>
+          </div>
+          <input
+            type="text"
+            name="modelName"
+            placeholder="Give any name to the bot"
+            className="input input-bordered w-full"
+            value={formData.modelName}
+            onChange={handleFormDataChange}
+          />
+        </label>
+
+        {/* description */}
+        <label className="form-control w-full">
+          <div className="label">
+            <span className="label-text">Description (optional)</span>
+          </div>
+          <textarea
+            className="textarea textarea-bordered h-24 w-full leading-5 resize-none"
+            placeholder="Describe what you want to chat to the bot about e.g. I want you to be a friend in school who is having trouble with bullies"
+            name="description"
+            value={formData.description}
+            onChange={handleFormDataChange}
+          ></textarea>
         </label>
 
         {/* select chat context */}

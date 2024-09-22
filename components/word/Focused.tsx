@@ -1,37 +1,39 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from "react";
 
 const useFocusedInput = () => {
-  const [focused, setFocused] = useState<HTMLInputElement | null>(null)
+  const [focused, setFocused] = useState<
+    HTMLInputElement | HTMLTextAreaElement | null
+  >(null);
 
   useEffect(() => {
     const handleFocused = (e: FocusEvent) => {
-      //   console.log('TARGET: ', e.target)
-      //   setFocused(e.target as EventTarget & HTMLInputElement)
-
-      if (e.target instanceof HTMLInputElement && e.target.type === 'text') {
-        setFocused(e.target)
+      if (
+        (e.target instanceof HTMLInputElement && e.target.type === "text") ||
+        e.target instanceof HTMLTextAreaElement
+      ) {
+        setFocused(e.target);
       }
-      // else if (e.target instanceof HTMLButtonElement) {
-
-      // }
-    }
+    };
 
     const handleBlurred = (event: FocusEvent) => {
-      if (event.target instanceof HTMLInputElement) {
-        setFocused(null)
+      if (
+        event.target instanceof HTMLInputElement ||
+        event.target instanceof HTMLTextAreaElement
+      ) {
+        setFocused(null);
       }
-    }
+    };
 
-    document.addEventListener('focusin', handleFocused)
-    document.addEventListener('focusout', handleBlurred)
+    document.addEventListener("focusin", handleFocused);
+    document.addEventListener("focusout", handleBlurred);
 
     return () => {
-      document.removeEventListener('focusin', handleFocused)
-      document.removeEventListener('focusout', handleBlurred)
-    }
-  }, [])
+      document.removeEventListener("focusin", handleFocused);
+      document.removeEventListener("focusout", handleBlurred);
+    };
+  }, []);
 
-  return focused
-}
+  return focused;
+};
 
-export default useFocusedInput
+export default useFocusedInput;

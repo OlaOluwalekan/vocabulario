@@ -39,9 +39,23 @@ model ExampleSentence {
 }
 
 model Chat {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
   title         String   
-  context       String   
+  context       String
+  modelName     String      @default("Pedro")
+  description   String
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+  messages      Message[]
+}
+
+model Message {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  chatId        String   @db.ObjectId
+  content       String
+  contentTranslation String
+  response      String   
+  responseTranslation String
+  createdAt     DateTime @default(now())
+  chat          Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
 }

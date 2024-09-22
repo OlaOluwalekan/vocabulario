@@ -6,6 +6,8 @@ import { db } from "../db";
 export const createChat = async (formData: FormData) => {
   const title = formData.get("title");
   const context = formData.get("context");
+  const modelName = formData.get("modelName");
+  const description = formData.get("description");
 
   if (!title) {
     return { success: false, message: "Please provide a title", data: null };
@@ -23,6 +25,8 @@ export const createChat = async (formData: FormData) => {
       data: {
         title: title as string,
         context: context as string,
+        modelName: modelName as string,
+        description: description as string,
       },
     });
     revalidatePath("/chat");
@@ -51,6 +55,30 @@ export const getChats = async () => {
       success: true,
       message: "Chats fetched successfully",
       data: chats,
+    };
+  } catch (error) {
+    console.log(error);
+
+    return {
+      success: false,
+      message: "Something went wrong",
+      data: null,
+    };
+  }
+};
+
+export const getChatById = async (chatId: string) => {
+  try {
+    const chat = await db.chat.findUnique({
+      where: {
+        id: chatId,
+      },
+    });
+
+    return {
+      success: true,
+      message: "Chat fetched successfully",
+      data: chat,
     };
   } catch (error) {
     console.log(error);
