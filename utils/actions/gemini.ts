@@ -40,11 +40,73 @@ export const generateResponse = async (
   }
 };
 
+export const generateEnglishSentence = async (words: string) => {
+  // console.log("word list", words);
+
+  const model = geminiAI.getGenerativeModel({
+    model: "gemini-1.5-flash",
+    systemInstruction: `Use only words from this list: ${words} to generate the response the sentence`,
+  });
+
+  try {
+    const result = await model.generateContent(
+      "Generate a random English sentence"
+    );
+    return {
+      success: true,
+      message: "English sentence generated successfully",
+      data: result.response.text(),
+    };
+  } catch (error) {
+    console.log(error);
+
+    return {
+      success: false,
+      message: "Error generating sentence",
+      data: null,
+    };
+  }
+};
+
+export const gradeTranslation = async (
+  sentence: string,
+  translation: string
+) => {
+  const model = geminiAI.getGenerativeModel({
+    model: "gemini-1.5-flash",
+    systemInstruction: `Compare the English sentence and the Spanish translation and grade, on a scale of 100, how close the translation is to the correct Spanish translation. Give feed back on areas where adjustment is needed and provide the correct translation. Your response should in JSON object with the following schema:
+
+    grade: The grade of the translation
+    feedback: As a markdown string, give the feedback you gave for the translation with breakdown of each words and their use.
+    translation: The corrected translation
+    `,
+  });
+
+  try {
+    const result = await model.generateContent(`
+      English sentence: ${sentence}
+      Spanish translation: ${translation}
+      `);
+    return {
+      success: true,
+      message: "Sentence graded successfully",
+      data: result.response.text(),
+    };
+  } catch (error) {
+    console.log(error);
+
+    return {
+      success: false,
+      message: "Error grading sentence",
+      data: null,
+    };
+  }
+};
+
 export const generateStreamResponse = async (prompt: string) => {
   const model = geminiAI.getGenerativeModel({
     model: "gemini-1.5-flash",
-    systemInstruction:
-      "You a girl, whose name is 'Grace'. You are in your second year studying computer science at the university of Florida and you are 18 years old",
+    systemInstruction: `Use only `,
   });
 
   try {

@@ -9,7 +9,7 @@ const Header = () => {
       </Link>
 
       <nav className="flex gap-2">
-        <ButtonLink href="/chat" text="Practice" />
+        <ButtonLink href="/practice" text="Practice" />
         <ButtonLink href="/words/add" text="Add Word" />
       </nav>
     </header>
